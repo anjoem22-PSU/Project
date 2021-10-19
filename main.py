@@ -10,9 +10,6 @@ rect_size = height // gheight
 x0 = (width - (rect_size * gwidth)) // 2
 y0 = (height - (rect_size * gheight)) // 2
 
-start_pos = (0,0)
-end_pos = (gwidth-1,gheight-1)
-
 black       = 0  , 0  , 0
 white       = 255, 255, 255
 gray        = 100, 100, 100
@@ -43,9 +40,10 @@ def grid_to_pixel(pos):
     y = y0 + rect_size * pos[1]
     return (x,y)
 
-def step(grid,path):
+def step(grid,path,start_pos,end_pos):
     m_pos = pygame.mouse.get_pos()
     m_buttons = pygame.mouse.get_pressed()
+    keys = pygame.key.get_pressed()
     
     g_pos = pixel_to_grid(m_pos)
     if g_pos:
@@ -53,8 +51,17 @@ def step(grid,path):
             grid[g_pos[1]][g_pos[0]] = 1
         elif m_buttons[2]:
             grid[g_pos[1]][g_pos[0]] = 0
+            
+        if keys[pygame.K_z]:
+            if not (g_pos[0] == end_pos[0] and g_pos[1] == end_pos[1]):
+                start_pos[0] = g_pos[0]
+                start_pos[1] = g_pos[1]
+        elif keys[pygame.K_x]:
+            if not (g_pos[0] == start_pos[0] and g_pos[1] == start_pos[1]):
+                end_pos[0] = g_pos[0]
+                end_pos[1] = g_pos[1]
 
-def draw(grid,path):
+def draw(grid,path,start_pos,end_pos):
     screen.fill(gray)
     
     for y,row in enumerate(grid):
@@ -75,6 +82,9 @@ def draw(grid,path):
 
 
 def main():
+    start_pos = [0,0]
+    end_pos = [gwidth-1,gheight-1]
+    
     grid = []
     path = []
     
@@ -90,8 +100,8 @@ def main():
             if event.type == pygame.QUIT:
                 sys.exit()
         
-        step(grid,path)
-        draw(grid,path)
+        step(grid,path,start_pos,end_pos)
+        draw(grid,path,start_pos,end_pos)
 
 if __name__ == "__main__":
     main()
