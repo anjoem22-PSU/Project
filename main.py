@@ -3,8 +3,8 @@ import sys
 
 pygame.init()
 
-size = width,height = 1280,720
-grid_size = gwidth,gheight = 75,50
+size = width,height = 1920,1080
+grid_size = gwidth,gheight = 100,100
 
 rect_size = height // gheight
 x0 = (width - (rect_size * gwidth)) // 2
@@ -63,13 +63,12 @@ def step(grid,path,start_pos,end_pos):
 
 def draw(grid,path,start_pos,end_pos):
     screen.fill(gray)
+    pygame.draw.rect(screen,white,pygame.Rect(x0,y0,rect_size * gwidth,rect_size * gheight))
     
     for y,row in enumerate(grid):
         for x,tile in enumerate(row):
             pos = grid_to_pixel((x,y))
-            if tile == 0:
-                pygame.draw.rect(screen,white,pygame.Rect(pos[0],pos[1],rect_size,rect_size))
-            elif tile == 1:
+            if tile == 1:
                 pygame.draw.rect(screen,black,pygame.Rect(pos[0],pos[1],rect_size,rect_size))
     
     start_x,start_y = grid_to_pixel(start_pos)
@@ -99,6 +98,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sys.exit()
         
         step(grid,path,start_pos,end_pos)
         draw(grid,path,start_pos,end_pos)
