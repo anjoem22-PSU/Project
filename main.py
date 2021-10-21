@@ -1,19 +1,20 @@
 import pygame
 import sys
 
+import path1 as pathfinding # replace path1 with whatever algorithm you want.
+
 pygame.init()
 
 size = width,height = 1920,1080
-grid_size = gwidth,gheight = 100,100
+grid_size = gwidth,gheight = 200,150
 
 rect_size = height // gheight
-x0 = (width - (rect_size * gwidth)) // 2
-y0 = (height - (rect_size * gheight)) // 2
+draw_pos = x0,y0 = (width - (rect_size * gwidth)) // 2, (height - (rect_size * gheight)) // 2
 
 black       = 0  , 0  , 0
 white       = 255, 255, 255
 gray        = 100, 100, 100
-enter_color = 0  , 255, 0
+enter_color = 0  , 200, 0
 exit_color  = 255, 0  , 0
 s_color     = 255, 100, 100
 p_color     = 255, 0  , 255
@@ -40,7 +41,7 @@ def grid_to_pixel(pos):
     y = y0 + rect_size * pos[1]
     return (x,y)
 
-def step(grid,path,start_pos,end_pos):
+def step(grid,start_pos,end_pos):
     m_pos = pygame.mouse.get_pos()
     m_buttons = pygame.mouse.get_pressed()
     keys = pygame.key.get_pressed()
@@ -53,23 +54,23 @@ def step(grid,path,start_pos,end_pos):
             grid[g_pos[1]][g_pos[0]] = 0
             
         if keys[pygame.K_z]:
-            if not (g_pos[0] == end_pos[0] and g_pos[1] == end_pos[1]):
+            if not (g_pos == tuple(end_pos)):
                 start_pos[0] = g_pos[0]
                 start_pos[1] = g_pos[1]
         elif keys[pygame.K_x]:
-            if not (g_pos[0] == start_pos[0] and g_pos[1] == start_pos[1]):
+            if not (g_pos == tuple(start_pos)):
                 end_pos[0] = g_pos[0]
                 end_pos[1] = g_pos[1]
 
-def draw(grid,path,start_pos,end_pos):
+def draw(grid,start_pos,end_pos):
     screen.fill(gray)
-    pygame.draw.rect(screen,white,pygame.Rect(x0,y0,rect_size * gwidth,rect_size * gheight))
+    pygame.draw.rect(screen,white,pygame.Rect(*draw_pos,rect_size * gwidth,rect_size * gheight))
     
     for y,row in enumerate(grid):
         for x,tile in enumerate(row):
-            pos = grid_to_pixel((x,y))
             if tile == 1:
-                pygame.draw.rect(screen,black,pygame.Rect(pos[0],pos[1],rect_size,rect_size))
+                pos = grid_to_pixel((x,y))
+                pygame.draw.rect(screen,black,pygame.Rect(*pos,rect_size,rect_size))
     
     start_x,start_y = grid_to_pixel(start_pos)
     pygame.draw.rect(screen,enter_color,pygame.Rect(start_x,start_y,rect_size,rect_size))
@@ -85,14 +86,13 @@ def main():
     end_pos = [gwidth-1,gheight-1]
     
     grid = []
-    path = []
+    
+    run_mode = 0
     
     for y in range(gheight):
         grid.append([])
-        path.append([])
         for x in range(gwidth):
             grid[y].append(0)
-            path[y].append(0)
     
     while 1:
         for event in pygame.event.get():
@@ -102,11 +102,15 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     sys.exit()
+                elif event.key == pygame.K_SPACE:
+                    run_mode = 1
         
-        step(grid,path,start_pos,end_pos)
-        draw(grid,path,start_pos,end_pos)
+        if (run_mode == 0):
+            step(grid,start_pos,end_pos)
+        else:
+            pass
+        
+        draw(grid,start_pos,end_pos)
 
 if __name__ == "__main__":
     main()
-
-
