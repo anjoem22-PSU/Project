@@ -1,12 +1,12 @@
 import pygame
 import sys
 
-import path1 as pathfinding # replace path1 with whatever algorithm you want.
+import path1 as Pathfinder # replace path1 with whatever algorithm you want.
 
 pygame.init()
 
 size = width,height = 1920,1080
-grid_size = gwidth,gheight = 200,150
+grid_size = gwidth,gheight = 10,10
 
 rect_size = height // gheight
 draw_pos = x0,y0 = (width - (rect_size * gwidth)) // 2, (height - (rect_size * gheight)) // 2
