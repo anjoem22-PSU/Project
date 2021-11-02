@@ -6,7 +6,7 @@ import path1 as pf # path1 is placeholder
 pygame.init()
 
 size = width,height = 1920,1080
-grid_size = gwidth,gheight = 192,108
+grid_size = gwidth,gheight = 75,75
 
 rect_size = height // gheight
 draw_pos = x0,y0 = (width - (rect_size * gwidth)) // 2, (height - (rect_size * gheight)) // 2
@@ -63,7 +63,7 @@ def step(grid,start_pos,end_pos):
                 end_pos[1] = g_pos[1]
 
 def pathfind_step(Path_Tool,grid,start_pos,end_pos):  
-    Path_Tool.step(grid)
+    return Path_Tool.step(grid)
 
 def draw(grid,start_pos,end_pos,Path_Tool = None):
     screen.fill(gray)
@@ -113,10 +113,13 @@ def main():
         if (run_mode == 0):
             step(grid,start_pos,end_pos)
             draw(grid,start_pos,end_pos)
-        else:
+        elif (run_mode == 1):
             if not path_started:
                 Path_Tool = pf.Pathfinder(start_pos,end_pos,gwidth,gheight)
-            pathfind_step(Path_Tool,grid,start_pos,end_pos)
+                path_started = True
+            finished = pathfind_step(Path_Tool,grid,start_pos,end_pos)
+            if finished:
+                run_mode = 2
             draw(grid,start_pos,end_pos,Path_Tool)
         
         
