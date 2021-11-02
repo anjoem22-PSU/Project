@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-import path1 as Pathfinder # replace path1 with whatever algorithm you want.
+import path1 as pf # path1 is placeholder
 
 pygame.init()
 
@@ -62,7 +62,10 @@ def step(grid,start_pos,end_pos):
                 end_pos[0] = g_pos[0]
                 end_pos[1] = g_pos[1]
 
-def draw(grid,start_pos,end_pos):
+def pathfind_step(Path_Tool,grid,start_pos,end_pos):  
+    Path_Tool.step(grid)
+
+def draw(grid,start_pos,end_pos,Path_Tool = None):
     screen.fill(gray)
     pygame.draw.rect(screen,white,pygame.Rect(*draw_pos,rect_size * gwidth,rect_size * gheight))
     
@@ -88,6 +91,8 @@ def main():
     grid = []
     
     run_mode = 0
+    path_started = False
+    Path_Tool = None
     
     for y in range(gheight):
         grid.append([])
@@ -107,10 +112,14 @@ def main():
         
         if (run_mode == 0):
             step(grid,start_pos,end_pos)
+            draw(grid,start_pos,end_pos)
         else:
-            pass
+            if not path_started:
+                Path_Tool = pf.Pathfinder(start_pos,end_pos,gwidth,gheight)
+            pathfind_step(Path_Tool,grid,start_pos,end_pos)
+            draw(grid,start_pos,end_pos,Path_Tool)
         
-        draw(grid,start_pos,end_pos)
+        
 
 if __name__ == "__main__":
     main()
