@@ -5,6 +5,7 @@ class Pathfinder():
         
         self.stage = 0
         
+        self.start = start_point
         self.end = end_point
         
         self.distances = []
@@ -49,7 +50,20 @@ class Pathfinder():
             self.stage = 1
     
     def build_path(self,positions):
-        pass
+        append_pos = None
+        for pos in positions:
+            if pos[0] < 0 or pos[0] >= self.width:
+                continue
+            if pos[1] < 0 or pos[1] >= self.height:
+                continue
+            if pos[0] == self.start[0] and pos[1] == self.start[1]:
+                self.final_path.append(pos)
+                return True
+            if not append_pos or self.distances[pos[1]][pos[0]] > self.distances[append_pos[1]][append_pos[1]]:
+                append_pos = pos
+                
+        self.final_path.append(append_pos)
+        return False
     
     def step(self,grid):
         if self.stage == 0:
@@ -80,4 +94,9 @@ class Pathfinder():
             right = [current_pos[0] + 1,current_pos[1]]
             left =  [current_pos[0] - 1,current_pos[1]]
             
-            self.build_path((up,down,left,right))
+            success = self.build_path((up,down,left,right))
+            
+            if success:
+                return True
+            else:
+                return False
