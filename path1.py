@@ -3,12 +3,15 @@ class Pathfinder():
         self.width = grid_width
         self.height = grid_height
         
-        self.start = start_point
+        self.stage = 0
+        
         self.end = end_point
         
         self.distances = []
         self.visited_grid = []
         self.to_visit = [start_point]
+        
+        self.final_path = [end_point]
         
         for y in range(grid_height):
             self.distances.append([])
@@ -27,28 +30,54 @@ class Pathfinder():
             return False
         if pos[1] < 0 or pos[1] >= self.height:
             return False
-        if grid[pos[1]][pos[0]] == 0:
+        if grid[pos[1]][pos[0]] == 1:
+            return False
+        if self.visited_grid[pos[1]][pos[0]] == True:
             return False
         return True
     
     def attempt_additions(self,pos,current_dist,grid):
+        if not self.position_available(pos,grid):
+            return
+        
+        new_dist = current_dist + 1
+        if self.distances[pos[1]][pos[0]] == -1 or self.distances[pos[1]][pos[0]] > new_dist:
+            self.distances[pos[1]][pos[0]] = new_dist
+            self.to_visit.append(pos)
+        
+        if pos[0] == self.end[0] and pos[1] == self.end[1]:
+            self.stage = 1
+    
+    def build_path(self,positions):
         pass
     
     def step(self,grid):
-        if len(self.to_visit) == 0:
-            return True
-        
-        current_pos = self.to_visit.pop(0)
-        current_dist = self.distances[current_pos[1]][current_pos[0]]
-        
-        up =    [current_pos[0],current_pos[1] + 1]
-        down =  [current_pos[0],current_pos[1] - 1]
-        right = [current_pos[0] + 1,current_pos[1]]
-        left =  [current_pos[0] - 1,current_pos[1]]
-        
-        attempt_addition(self,up,current_dist,grid)
-        attempt_addition(self,down,current_dist,grid)
-        attempt_addition(self,right,current_dist,grid)
-        attempt_addition(self,left,current_dist,grid)
-        
-        return False
+        if self.stage == 0:
+            if len(self.to_visit) == 0:
+                return True
+            
+            current_pos = self.to_visit.pop(0)
+            current_dist = self.distances[current_pos[1]][current_pos[0]]
+            
+            up =    [current_pos[0],current_pos[1] + 1]
+            down =  [current_pos[0],current_pos[1] - 1]
+            right = [current_pos[0] + 1,current_pos[1]]
+            left =  [current_pos[0] - 1,current_pos[1]]
+            
+            self.attempt_additions(up,current_dist,grid)
+            self.attempt_additions(down,current_dist,grid)
+            self.attempt_additions(right,current_dist,grid)
+            self.attempt_additions(left,current_dist,grid)
+            
+            self.visited_grid[current_pos[1]][current_pos[0]] = True
+            
+            return False
+        else:
+            current_pos = self.final_path[-1]
+            
+            up =    [current_pos[0],current_pos[1] + 1]
+            down =  [current_pos[0],current_pos[1] - 1]
+            right = [current_pos[0] + 1,current_pos[1]]
+            left =  [current_pos[0] - 1,current_pos[1]]
+            
+            self.build_path((up,down,left,right))

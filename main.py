@@ -6,7 +6,7 @@ import path1 as pf # path1 is placeholder
 pygame.init()
 
 size = width,height = 1920,1080
-grid_size = gwidth,gheight = 75,75
+grid_size = gwidth,gheight = 25,25
 
 rect_size = height // gheight
 draw_pos = x0,y0 = (width - (rect_size * gwidth)) // 2, (height - (rect_size * gheight)) // 2
@@ -16,8 +16,7 @@ white       = 255, 255, 255
 gray        = 100, 100, 100
 enter_color = 0  , 200, 0
 exit_color  = 255, 0  , 0
-s_color     = 255, 100, 100
-p_color     = 255, 0  , 255
+p_color     = 0  , 0  , 255
 
 screen = pygame.display.set_mode(size)
 
@@ -62,12 +61,25 @@ def step(grid,start_pos,end_pos):
                 end_pos[0] = g_pos[0]
                 end_pos[1] = g_pos[1]
 
-def pathfind_step(Path_Tool,grid,start_pos,end_pos):  
+def pathfind_step(Path_Tool,grid):  
     return Path_Tool.step(grid)
 
 def draw(grid,start_pos,end_pos,Path_Tool = None):
     screen.fill(gray)
     pygame.draw.rect(screen,white,pygame.Rect(*draw_pos,rect_size * gwidth,rect_size * gheight))
+    
+    if Path_Tool:
+        for y,row in enumerate(Path_Tool.distances):
+            for x,tile in enumerate(row):
+                if tile != -1:
+                    pos = grid_to_pixel((x,y))
+                    green = max(0,200 - tile*4)
+                    pygame.draw.rect(screen,(200,green,200),pygame.Rect(*pos,rect_size,rect_size))
+        
+        if Path_Tool.stage == 1:
+            for tile in Path_Tool.final_path:
+                pos = grid_to_pixel((tile[0],tile[1]))
+                pygame.draw.rect(screen,p_color,pygame.Rect(*pos,rect_size,rect_size))
     
     for y,row in enumerate(grid):
         for x,tile in enumerate(row):
@@ -107,22 +119,25 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     sys.exit()
-                elif event.key == pygame.K_SPACE:
+                if run_mode == 0 and event.key == pygame.K_SPACE:
                     run_mode = 1
+                elif run_mode == 1 and event.key == pygame.K_SPACE:
+                    Path_Tool.step(grid)
+                
+                if event.key == pygame.K_p:
+                    print(Path_Tool.to_visit)
         
         if (run_mode == 0):
             step(grid,start_pos,end_pos)
-            draw(grid,start_pos,end_pos)
         elif (run_mode == 1):
             if not path_started:
                 Path_Tool = pf.Pathfinder(start_pos,end_pos,gwidth,gheight)
                 path_started = True
-            finished = pathfind_step(Path_Tool,grid,start_pos,end_pos)
+            finished = pathfind_step(Path_Tool,grid)
             if finished:
                 run_mode = 2
-            draw(grid,start_pos,end_pos,Path_Tool)
         
-        
+        draw(grid,start_pos,end_pos,Path_Tool)
 
 if __name__ == "__main__":
     main()
