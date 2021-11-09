@@ -1,9 +1,12 @@
 import pygame
 import sys
 
-import path1 as pf # path1 is placeholder
+import path1 as pf
 
 pygame.init()
+
+myfont = pygame.font.SysFont("Arial", 30)
+label = myfont.render("PATH NOT FOUND!", 1, (255,0,0))
 
 size = width,height = 1920,1080
 grid_size = gwidth,gheight = 25,25
@@ -73,7 +76,7 @@ def draw(grid,start_pos,end_pos,Path_Tool = None):
             for x,tile in enumerate(row):
                 if tile != -1:
                     pos = grid_to_pixel((x,y))
-                    green = max(0,200 - tile*4)
+                    green = max(0,150 - tile*2)
                     pygame.draw.rect(screen,(200,green,200),pygame.Rect(*pos,rect_size,rect_size))
         
         if Path_Tool.stage == 1:
@@ -92,6 +95,9 @@ def draw(grid,start_pos,end_pos,Path_Tool = None):
     
     end_x,end_y = grid_to_pixel(end_pos)
     pygame.draw.rect(screen,exit_color,pygame.Rect(end_x,end_y,rect_size,rect_size))
+    
+    if Path_Tool and Path_Tool.failed:
+        screen.blit(label, (20, 10))
     
     pygame.display.flip()
 
@@ -119,11 +125,20 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     sys.exit()
-                if run_mode == 0 and event.key == pygame.K_SPACE:
-                    run_mode = 1
-                elif run_mode == 1 and event.key == pygame.K_SPACE:
-                    Path_Tool.step(grid)
-                
+                if event.key == pygame.K_SPACE:
+                    if run_mode == 0:
+                        run_mode = 1
+                    elif run_mode == 1:
+                        Path_Tool.step(grid)
+                    elif run_mode == 2:
+                        run_mode = 0
+                        Path_Tool = None
+                        path_started = False
+                if event.key == pygame.K_BACKSPACE and run_mode == 0:
+                     for y in range(gheight):
+                        for x in range(gwidth):
+                            grid[y][x] = 0
+                    
                 if event.key == pygame.K_p:
                     print(Path_Tool.to_visit)
         
@@ -138,6 +153,7 @@ def main():
                 run_mode = 2
         
         draw(grid,start_pos,end_pos,Path_Tool)
+            
 
 if __name__ == "__main__":
     main()
