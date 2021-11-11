@@ -2,6 +2,7 @@ import pygame
 import sys
 
 import path1 as pf
+import load_maze
 
 pygame.init()
 
@@ -9,7 +10,7 @@ myfont = pygame.font.SysFont("Arial", 30)
 label = myfont.render("PATH NOT FOUND!", 1, (255,0,0))
 
 size = width,height = 1920,1080
-grid_size = gwidth,gheight = 25,25
+grid_size = gwidth,gheight = 21,21
 
 rect_size = height // gheight
 draw_pos = x0,y0 = (width - (rect_size * gwidth)) // 2, (height - (rect_size * gheight)) // 2
@@ -103,8 +104,8 @@ def draw(grid,start_pos,end_pos,Path_Tool = None):
 
 
 def main():
-    start_pos = [0,0]
-    end_pos = [gwidth-1,gheight-1]
+    start_pos = [0,1]
+    end_pos = [gwidth-1,gheight-2]
     
     grid = []
     
@@ -141,6 +142,9 @@ def main():
                     
                 if event.key == pygame.K_p:
                     print(Path_Tool.to_visit)
+                if event.key == pygame.K_g and run_mode == 0:
+                    maze = load_maze.from_path("mazes/maze_a.png")
+                    grid = maze
         
         if (run_mode == 0):
             step(grid,start_pos,end_pos)
